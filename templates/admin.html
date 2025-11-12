@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>举报管理后台 - 反诈安全网</title>
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #00c3ff;
+            --dark-bg: #0a1929;
+            --card-bg: #142840;
+            --text-primary: #ffffff;
+            --text-secondary: #a0d2ff;
+            --border-color: rgba(0, 195, 255, 0.3);
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--dark-bg), #0c2541);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .controls {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(10, 25, 50, 0.5);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-options select {
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(10, 25, 50, 0.5);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 195, 255, 0.4);
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 195, 255, 0.4);
+            border-color: var(--secondary-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-header h3 {
+            margin: 0;
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+        }
+
+        .fraud-type {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .impersonation { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+        .loan { background: linear-gradient(135deg, #ffa801, #ff9234); }
+        .shopping { background: linear-gradient(135deg, #00d84a, #00b894); }
+        .partTimeJob { background: linear-gradient(135deg, #0984e3, #00cec9); }
+        .investment { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
+        .onlineDating { background: linear-gradient(135deg, #e84393, #fd79a8); }
+        .phishing { background: linear-gradient(135deg, #e17055, #fab1a0); }
+        .other { background: linear-gradient(135deg, #636e72, #b2bec3); }
+
+        .card-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .report-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .time {
+            color: #66c2ff;
+        }
+
+        .status {
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .status.submitted {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .status.processing {
+            background: rgba(25, 118, 210, 0.2);
+            color: #1976d2;
+        }
+
+        .status.completed {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .card-footer {
+            text-align: right;
+        }
+
+        .btn-small {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-small:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 195, 255, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, var(--dark-bg), var(--card-bg));
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: var(--secondary-color);
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section h3 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-item {
+            display: flex;
+            margin-bottom: 0.8rem;
+            padding: 0.8rem;
+            background: rgba(10, 25, 50, 0.5);
+            border-radius: 8px;
+        }
+
+        .detail-item label {
+            font-weight: bold;
+            color: #66c2ff;
+            min-width: 100px;
+            margin-right: 1rem;
+        }
+
+        .detail-item span {
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+        .description-content {
+            background: rgba(10, 25, 50, 0.5);
+            padding: 1.5rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .file-list {
+            list-style: none;
+        }
+
+        .file-list li {
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            background: rgba(10, 25, 50, 0.5);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .file-name {
+            color: #66c2ff;
+            font-weight: bold;
+        }
+
+        .file-size {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .status-info {
+            display: flex;
+            justify-content: center;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            background: rgba(10, 25, 50, 0.5);
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .status-item .status-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .status-item .status-text h4 {
+            color: var(--secondary-color);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .status-item .status-text p {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .loading, .error, .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .error {
+            color: var(--danger-color);
+        }
+
+        .no-data {
+            color: #a0d2ff;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .controls-row {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                min-width: auto;
+            }
+            
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+                margin: 10% auto;
+            }
+            
+            .detail-item {
+                flex-direction: column;
+            }
+            
+            .detail-item label {
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1 class="logo">反诈安全网</h1>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <h2 style="margin: 0;">举报管理后台</h2>
+                <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>举报反馈管理</h1>
+            <p>查看和管理用户提交的举报信息</p>
+        </div>
+
+        <div class="controls">
+            <div class="controls-row">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜索举报ID或关键词...">
+                </div>
+                <button id="searchBtn" class="btn">搜索</button>
+            </div>
+            <div class="controls-row">
+                <div class="filter-options">
+                    <select id="typeFilter">
+                        <option value="">所有类型</option>
+                        <option value="impersonation">冒充公检法</option>
+                        <option value="loan">网络贷款</option>
+                        <option value="shopping">网购退款</option>
+                        <option value="partTimeJob">兼职刷单</option>
+                        <option value="investment">虚假投资</option>
+                        <option value="onlineDating">杀猪盘/网恋诈骗</option>
+                        <option value="phishing">钓鱼网站/链接</option>
+                        <option value="other">其他类型</option>
+                    </select>
+                    <select id="statusFilter">
+                        <option value="">所有状态</option>
+                        <option value="submitted">已提交</option>
+                        <option value="processing">处理中</option>
+                        <option value="completed">已完成</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="reports-list" id="reportsList">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <!-- 举报详情模态框 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>举报详情</h2>
+            <div id="reportDetail">
+                <!-- 详情内容将通过JavaScript动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载举报列表
+            loadReports();
+            
+            // 绑定搜索事件
+            bindSearchEvents();
+            
+            // 模态框相关事件
+            setupModalEvents();
+        });
+
+        // 退出登录功能
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        // 加载举报列表
+        function loadReports(search = '', type = '') {
+            const reportsList = document.getElementById('reportsList');
+            if (!reportsList) return;
+            
+            // 显示加载状态
+            reportsList.innerHTML = '<div class="loading">加载中...</div>';
+            
+            // 构建查询参数
+            const params = new URLSearchParams();
+            if (search) params.append('search', search);
+            if (type) params.append('type', type);
+            
+            // 获取举报列表
+            fetch(`/api/reports?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        displayReports(data.reports);
+                    } else {
+                        reportsList.innerHTML = `<div class="error">加载失败: ${data.message}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('加载举报列表失败:', error);
+                    reportsList.innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
+                });
+        }
+
+        // 显示举报列表
+        function displayReports(reports) {
+            const reportsList = document.getElementById('reportsList');
+            if (!reportsList) return;
+            
+            if (!reports || reports.length === 0) {
+                reportsList.innerHTML = '<div class="no-data">暂无举报数据</div>';
+                return;
+            }
+            
+            let html = '<div class="reports-grid">';
+            reports.forEach(report => {
+                // 格式化时间
+                const reportDate = new Date(report.timestamp);
+                const formattedDate = isNaN(reportDate.getTime()) ? '未知时间' : reportDate.toLocaleString('zh-CN');
+                
+                // 获取诈骗类型标签
+                const fraudTypeLabel = getFraudTypeLabel(report.fraud_type);
+                
+                html += `
+                    <div class="report-card" data-report-id="${report.report_id}">
+                        <div class="card-header">
+                            <h3>举报 #${report.report_id.substring(0, 8)}</h3>
+                            <span class="fraud-type ${report.fraud_type}">${fraudTypeLabel}</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="description">${report.description.substring(0, 100)}${report.description.length > 100 ? '...' : ''}</p>
+                            <div class="report-meta">
+                                <span class="time">时间: ${formattedDate}</span>
+                                <span class="status processing">处理中</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn-small" onclick="viewReportDetail('${report.report_id}')">查看详情</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            reportsList.innerHTML = html;
+        }
+
+        // 获取诈骗类型标签文本
+        function getFraudTypeLabel(type) {
+            const typeMap = {
+                'impersonation': '冒充公检法',
+                'loan': '网络贷款',
+                'shopping': '网购退款',
+                'partTimeJob': '兼职刷单',
+                'investment': '虚假投资',
+                'onlineDating': '杀猪盘/网恋诈骗',
+                'phishing': '钓鱼网站/链接',
+                'other': '其他类型'
+            };
+            
+            return typeMap[type] || '未知类型';
+        }
+
+        // 查看举报详情
+        function viewReportDetail(reportId) {
+            const modal = document.getElementById('detailModal');
+            const detailContainer = document.getElementById('reportDetail');
+            
+            if (!modal || !detailContainer) return;
+            
+            // 显示加载状态
+            detailContainer.innerHTML = '<div class="loading">加载中...</div>';
+            modal.style.display = 'block';
+            
+            // 获取举报详情
+            fetch(`/api/report/${reportId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        displayReportDetail(data.report);
+                    } else {
+                        detailContainer.innerHTML = `<div class="error">加载失败: ${data.message}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('加载举报详情失败:', error);
+                    detailContainer.innerHTML = `<div class="error">加载失败: ${error.message}</div>`;
+                });
+        }
+
+        // 显示举报详情
+        function displayReportDetail(report) {
+            const detailContainer = document.getElementById('reportDetail');
+            if (!detailContainer) return;
+            
+            // 格式化时间
+            const reportDate = new Date(report.timestamp);
+            const formattedDate = isNaN(reportDate.getTime()) ? '未知时间' : reportDate.toLocaleString('zh-CN');
+            
+            // 获取诈骗类型标签
+            const fraudTypeLabel = getFraudTypeLabel(report.fraud_type);
+            
+            // 构建文件列表HTML
+            let filesHtml = '';
+            if (report.files && report.files.length > 0) {
+                filesHtml = `
+                    <h4>相关证据:</h4>
+                    <ul class="file-list">
+                        ${report.files.map(file => `
+                            <li>
+                                <span class="file-name">${file.original_name}</span>
+                                <span class="file-size">(${(file.size/1024).toFixed(2)} KB)</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+            }
+            
+            detailContainer.innerHTML = `
+                <div class="report-detail">
+                    <div class="detail-section">
+                        <h3>举报信息</h3>
+                        <div class="detail-item">
+                            <label>举报ID:</label>
+                            <span>${report.report_id}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>举报时间:</label>
+                            <span>${formattedDate}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>诈骗类型:</label>
+                            <span class="fraud-type ${report.fraud_type}">${fraudTypeLabel}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>诈骗时间:</label>
+                            <span>${report.fraud_time || '未提供'}</span>
+                        </div>
+                        ${report.fraud_amount ? `
+                        <div class="detail-item">
+                            <label>涉及金额:</label>
+                            <span>${report.fraud_amount} 元</span>
+                        </div>` : ''}
+                        ${report.reporter_name ? `
+                        <div class="detail-item">
+                            <label>举报人:</label>
+                            <span>${report.reporter_name}</span>
+                        </div>` : ''}
+                        ${report.contact_info ? `
+                        <div class="detail-item">
+                            <label>联系方式:</label>
+                            <span>${report.contact_info}</span>
+                        </div>` : ''}
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3>详细描述</h3>
+                        <div class="description-content">
+                            ${report.description || '未提供详细描述'}
+                        </div>
+                    </div>
+                    
+                    ${filesHtml ? `
+                    <div class="detail-section">
+                        ${filesHtml}
+                    </div>` : ''}
+                    
+                    <div class="detail-section">
+                        <h3>处理状态</h3>
+                        <div class="status-info">
+                            <div class="status-item processing">
+                                <div class="status-icon">⏳</div>
+                                <div class="status-text">
+                                    <h4>处理中</h4>
+                                    <p>您的举报已收到，正在分析处理中</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 绑定搜索事件
+        function bindSearchEvents() {
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const typeFilter = document.getElementById('typeFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            
+            if (searchBtn) {
+                searchBtn.addEventListener('click', function() {
+                    const search = searchInput ? searchInput.value.trim() : '';
+                    const type = typeFilter ? typeFilter.value : '';
+                    loadReports(search, type);
+                });
+            }
+            
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const search = searchInput.value.trim();
+                        const type = typeFilter ? typeFilter.value : '';
+                        loadReports(search, type);
+                    }
+                });
+            }
+            
+            if (typeFilter) {
+                typeFilter.addEventListener('change', function() {
+                    const search = searchInput ? searchInput.value.trim() : '';
+                    const type = typeFilter.value;
+                    loadReports(search, type);
+                });
+            }
+        }
+
+        // 设置模态框事件
+        function setupModalEvents() {
+            const modal = document.getElementById('detailModal');
+            const closeBtn = document.querySelector('.modal .close');
+            
+            if (closeBtn && modal) {
+                closeBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            }
+            
+            if (modal) {
+                window.addEventListener('click', function(event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
